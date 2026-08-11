@@ -17,6 +17,9 @@ module.exports = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "1d",
   saltRounds: Number(process.env.BCRYPT_SALT_ROUNDS) || 10,
   corsOrigin: process.env.CORS_ORIGIN || "*",
+  // Read by the body parsers and quoted back in the 413, so the limit and the
+  // message it produces can't drift apart.
+  bodyLimit: process.env.BODY_LIMIT || "10kb",
   // debug is noisy but useful locally; production stays at info so the
   // volume stays affordable.
   logLevel: process.env.LOG_LEVEL || (isProduction ? "info" : "debug"),

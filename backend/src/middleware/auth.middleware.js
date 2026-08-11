@@ -44,6 +44,11 @@ const authenticate = asyncHandler(async (req, res, next) => {
 const authorize =
   (...roles) =>
   (req, res, next) => {
+    // Guards against being mounted without authenticate ahead of it, which
+    // would otherwise read role off undefined and report a routing mistake
+    // as a 500 instead of the 401 it really is.
+    if (!req.user) return next(new ApiError(401, "Authentication required"));
+
     if (!roles.includes(req.user.role)) {
       return next(new ApiError(403, "You do not have permission to do that"));
     }

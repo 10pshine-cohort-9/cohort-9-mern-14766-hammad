@@ -1,5 +1,6 @@
 const ApiError = require("../utils/ApiError");
 const logger = require("../config/logger");
+const { bodyLimit } = require("../config/env");
 
 const notFound = (req, res, next) => {
   next(new ApiError(404, `Route not found: ${req.method} ${req.originalUrl}`));
@@ -29,6 +30,22 @@ const toApiError = (err) => {
 
   if (err.type === "entity.parse.failed") {
     return new ApiError(400, "Request body contains malformed JSON");
+  }
+
+  // Rejected by the body parser before any route ran. Quoting the limit is the
+  // difference between a client trimming the payload and retrying it blindly.
+  if (err.type === "entity.too.large") {
+    return new ApiError(413, `Request body exceeds the ${bodyLimit} limit`);
+  }
+
+  // Everything else body-parser raises — too many form parameters, unsupported
+  // charset, unsupported content encoding — is built by http-errors, so it
+  // already carries the right status and sets expose when the message is safe
+  // to show. Honouring that keeps a client mistake out of the branch below,
+  // where it would be recorded as a server bug and page whoever is on call.
+  const status = err.status || err.statusCode;
+  if (err.expose === true && Number.isInteger(status) && status >= 400 && status < 500) {
+    return new ApiError(status, err.message);
   }
 
   return null;
