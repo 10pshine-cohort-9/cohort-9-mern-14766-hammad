@@ -4,10 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerSchema } from '../validators/authSchema';
 import { useAuth } from '../context/AuthContext';
+import FormInput from '../components/FormInput';
 
 const RegisterPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [serverError, setServerError] = useState('');
   const { register: registerAuth } = useAuth();
   const navigate = useNavigate();
@@ -56,86 +55,38 @@ const RegisterPage = () => {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-          <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Full name</label>
-            <input
-              type="text"
-              placeholder="Your Name"
-              {...register('name')}
-              className={`w-full px-3 py-2 bg-white border ${
-                errors.name ? 'border-red-500' : 'border-slate-300'
-              } rounded-md text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-            />
-            {errors.name && (
-              <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>
-            )}
-          </div>
+          <FormInput
+            label="Full name"
+            type="text"
+            placeholder="Your Name"
+            register={register('name')}
+            error={errors.name}
+          />
 
-          <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Email address</label>
-            <input
-              type="email"
-              placeholder="Your Email"
-              {...register('email')}
-              className={`w-full px-3 py-2 bg-white border ${
-                errors.email ? 'border-red-500' : 'border-slate-300'
-              } rounded-md text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-            />
-            {errors.email && (
-              <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
-            )}
-          </div>
+          <FormInput
+            label="Email address"
+            type="email"
+            placeholder="Your Email"
+            register={register('email')}
+            error={errors.email}
+          />
 
-          <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Password</label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                {...register('password')}
-                className={`w-full px-3 py-2 bg-white border ${
-                  errors.password ? 'border-red-500' : 'border-slate-300'
-                } rounded-md text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-xs text-slate-500 hover:text-slate-700"
-              >
-                {showPassword ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            <p className="mt-1 text-[11px] text-slate-400">
-              At least 8 characters with 1 uppercase, 1 lowercase & 1 number
-            </p>
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
-            )}
-          </div>
+          <FormInput
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            register={register('password')}
+            error={errors.password}
+            helperText="At least 8 characters with 1 uppercase, 1 lowercase & 1 number"
+          />
 
-          <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Confirm password</label>
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                {...register('confirmPassword')}
-                className={`w-full px-3 py-2 bg-white border ${
-                  errors.confirmPassword ? 'border-red-500' : 'border-slate-300'
-                } rounded-md text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-2.5 text-xs text-slate-500 hover:text-slate-700"
-              >
-                {showConfirmPassword ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            {errors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-600">{errors.confirmPassword.message}</p>
-            )}
-          </div>
+          <FormInput
+            label="Confirm password"
+            type="password"
+            placeholder="••••••••"
+            register={register('confirmPassword')}
+            error={errors.confirmPassword}
+          />
 
           <div className="flex items-start">
             <input

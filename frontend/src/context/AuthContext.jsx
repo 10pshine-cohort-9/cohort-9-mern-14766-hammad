@@ -37,35 +37,27 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    try {
-      const res = await authService.login(credentials);
-      const { user: userData, token: authToken } = res.data;
+    const res = await authService.login(credentials);
+    const { user: userData, token: authToken } = res.data;
 
-      localStorage.setItem('token', authToken);
-      setToken(authToken);
-      setUser(userData);
-      setIsAuthenticated(true);
+    localStorage.setItem('token', authToken);
+    setToken(authToken);
+    setUser(userData);
+    setIsAuthenticated(true);
 
-      return { success: true, user: userData, message: res.message };
-    } catch (err) {
-      throw err;
-    }
+    return { success: true, user: userData, message: res.message };
   };
 
   const register = async (userData) => {
-    try {
-      const res = await authService.register(userData);
-      const { user: newUser, token: authToken } = res.data;
+    const res = await authService.register(userData);
+    const { user: newUser, token: authToken } = res.data;
 
-      localStorage.setItem('token', authToken);
-      setToken(authToken);
-      setUser(newUser);
-      setIsAuthenticated(true);
+    localStorage.setItem('token', authToken);
+    setToken(authToken);
+    setUser(newUser);
+    setIsAuthenticated(true);
 
-      return { success: true, user: newUser, message: res.message };
-    } catch (err) {
-      throw err;
-    }
+    return { success: true, user: newUser, message: res.message };
   };
 
   const logout = () => {

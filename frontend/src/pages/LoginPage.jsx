@@ -4,9 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginSchema } from '../validators/authSchema';
 import { useAuth } from '../context/AuthContext';
+import FormInput from '../components/FormInput';
 
 const LoginPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -49,46 +49,21 @@ const LoginPage = () => {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-          <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Email address</label>
-            <input
-              type="email"
-              placeholder="Your Email"
-              {...register('email')}
-              className={`w-full px-3 py-2 bg-white border ${
-                errors.email ? 'border-red-500' : 'border-slate-300'
-              } rounded-md text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-            />
-            {errors.email && (
-              <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
-            )}
-          </div>
+          <FormInput
+            label="Email address"
+            type="email"
+            placeholder="Your Email"
+            register={register('email')}
+            error={errors.email}
+          />
 
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-medium text-slate-700">Password</label>
-            </div>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                {...register('password')}
-                className={`w-full px-3 py-2 bg-white border ${
-                  errors.password ? 'border-red-500' : 'border-slate-300'
-                } rounded-md text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-xs text-slate-500 hover:text-slate-700"
-              >
-                {showPassword ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
-            )}
-          </div>
+          <FormInput
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            register={register('password')}
+            error={errors.password}
+          />
 
           <div className="flex items-center justify-between text-xs">
             <label className="flex items-center text-slate-600 cursor-pointer">

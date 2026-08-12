@@ -1,4 +1,5 @@
 import React from 'react';
+import DOMPurify from 'dompurify';
 
 const NoteCard = ({ note, onEdit, onDelete }) => {
   const noteId = note.id || note._id;
@@ -9,6 +10,8 @@ const NoteCard = ({ note, onEdit, onDelete }) => {
         year: 'numeric',
       })
     : '';
+
+  const sanitizedContent = DOMPurify.sanitize(note.content || '');
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:border-slate-300 transition-colors h-full">
@@ -27,7 +30,7 @@ const NoteCard = ({ note, onEdit, onDelete }) => {
         {/* Rich Text Preview */}
         <div
           className="rich-text-preview text-xs text-slate-600 leading-relaxed max-h-36 overflow-hidden relative"
-          dangerouslySetInnerHTML={{ __html: note.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
         />
       </div>
 

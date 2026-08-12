@@ -29,13 +29,21 @@ const NoteModal = ({ isOpen, onClose, onSave, editingNote, submitting }) => {
     onClose();
   };
 
+  const extractPlainText = (html) => {
+    if (!html) return '';
+    if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return (doc.body.textContent || '').trim();
+    }
+    return html.replace(/<[^>]*>/g, '').trim();
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setValidationError('');
 
     const cleanTitle = title.trim();
-    // Strip HTML tags to check if text is truly non-empty
-    const plainContent = content.replace(/<[^>]*>/g, '').trim();
+    const plainContent = extractPlainText(content);
 
     if (!cleanTitle) {
       setValidationError('Title is required');
