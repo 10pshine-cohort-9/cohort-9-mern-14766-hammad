@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "test:watch": "mocha --watch",
+    "test:coverage": "nyc mocha"
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,11 @@
     "pino-http": "^10.3.0"
   },
   "devDependencies": {
-    "pino-pretty": "^11.3.0"
+    "chai": "^4.5.0",
+    "mocha": "^10.8.2",
+    "nyc": "^17.1.0",
+    "pino-pretty": "^11.3.0",
+    "sinon": "^19.0.2",
+    "supertest": "^7.1.1"
   }
 }
