@@ -82,7 +82,7 @@ const NoteModal = ({ isOpen, onClose, onSave, editingNote, submitting }) => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
             <label className="block text-xs font-medium text-slate-700 mb-1">
               Title <span className="text-red-500">*</span>
