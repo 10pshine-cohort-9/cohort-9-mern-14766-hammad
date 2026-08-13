@@ -29,6 +29,15 @@ const authenticate = asyncHandler(async (req, res, next) => {
   if (!user) throw new ApiError(401, "This user no longer exists");
 
   req.user = user;
+
+  // Rejections are logged once, centrally, by errorHandler. Only the accepted
+  // case needs a line here, and it is debug because the response log already
+  // carries the userId.
+  req.log.debug(
+    { event: "auth.token.accepted", userId: String(user.id), role: user.role },
+    "Token accepted"
+  );
+
   next();
 });
 

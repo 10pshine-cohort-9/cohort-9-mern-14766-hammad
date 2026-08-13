@@ -1,4 +1,5 @@
 const ApiError = require("../utils/ApiError");
+const logger = require("../config/logger");
 
 const notFound = (req, res, next) => {
   next(new ApiError(404, `Route not found: ${req.method} ${req.originalUrl}`));
@@ -33,15 +34,37 @@ const toApiError = (err) => {
   return null;
 };
 
+// A rejected credential and a rejected note id are both 4xx, but only the
+// first one matters when someone is reading the logs after a breach.
+const eventFor = (statusCode) => {
+  if (statusCode === 401) return "auth.denied";
+  if (statusCode === 403) return "auth.forbidden";
+  return "request.rejected";
+};
+
 const errorHandler = (err, req, res, next) => {
   const apiError = toApiError(err);
+  // req.log is a child logger carrying the request id; the module logger is
+  // only a fallback for an error raised before the http logger ran.
+  const log = req.log || logger;
 
   // Anything unrecognised is a genuine bug: log the stack, but send back
   // something generic so we don't leak internals.
   if (!apiError) {
-    console.error(err);
+    log.error({ err, event: "server.error" }, `Unhandled error: ${err.message}`);
     return res.status(500).json({ success: false, message: "Internal server error" });
   }
+
+  // Expected rejections are warnings, not errors — they need no stack, and
+  // paging someone for a wrong password would be noise.
+  log.warn(
+    {
+      event: eventFor(apiError.statusCode),
+      statusCode: apiError.statusCode,
+      errors: apiError.errors,
+    },
+    apiError.message
+  );
 
   const body = { success: false, message: apiError.message };
   if (apiError.errors) body.errors = apiError.errors;

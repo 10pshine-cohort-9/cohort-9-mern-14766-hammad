@@ -8,6 +8,7 @@ const {
   deleteNote,
 } = require("../controllers/note.controller");
 const validate = require("../middleware/validate");
+const audit = require("../middleware/audit.middleware");
 const { authenticate } = require("../middleware/auth.middleware");
 const {
   noteIdValidator,
@@ -20,10 +21,10 @@ const router = express.Router();
 // A note only ever belongs to one user, so there is no public route here.
 router.use(authenticate);
 
-router.post("/", createNoteValidator, validate, createNote);
-router.get("/", getNotes);
-router.get("/:id", noteIdValidator, validate, getNote);
-router.patch("/:id", updateNoteValidator, validate, updateNote);
-router.delete("/:id", noteIdValidator, validate, deleteNote);
+router.post("/", audit("note.create"), createNoteValidator, validate, createNote);
+router.get("/", audit("note.list"), getNotes);
+router.get("/:id", audit("note.read"), noteIdValidator, validate, getNote);
+router.patch("/:id", audit("note.update"), updateNoteValidator, validate, updateNote);
+router.delete("/:id", audit("note.delete"), noteIdValidator, validate, deleteNote);
 
 module.exports = router;
