@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 
-const { corsOrigin, bodyLimit } = require("./config/env");
+const { corsOrigin } = require("./config/env");
 const routes = require("./routes");
 const { httpLogger } = require("./middleware/logger.middleware");
 const { notFound, errorHandler } = require("./middleware/error.middleware");
@@ -13,8 +13,8 @@ const app = express();
 app.use(httpLogger);
 
 app.use(cors({ origin: corsOrigin }));
-app.use(express.json({ limit: bodyLimit }));
-app.use(express.urlencoded({ extended: true, limit: bodyLimit }));
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
 app.use("/api/v1", routes);
 

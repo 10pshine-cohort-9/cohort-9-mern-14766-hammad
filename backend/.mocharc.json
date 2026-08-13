@@ -1,8 +1,0 @@
-{
-  "require": ["./test/setup.js"],
-  "spec": ["test/**/*.test.js"],
-  "recursive": true,
-  "timeout": 10000,
-  "exit": true,
-  "reporter": "spec"
-}
