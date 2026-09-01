@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --require tests/setup.js \"tests/**/*.test.js\" --recursive --exit",
+    "test:coverage": "nyc --reporter=text --reporter=html mocha --require tests/setup.js \"tests/**/*.test.js\" --recursive --exit"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,11 @@
     "pino-http": "^10.3.0"
   },
   "devDependencies": {
-    "pino-pretty": "^11.3.0"
+    "chai": "^4.5.0",
+    "mocha": "^11.8.0",
+    "nyc": "^18.0.0",
+    "pino-pretty": "^11.3.0",
+    "sinon": "^22.1.0",
+    "supertest": "^7.2.2"
   }
 }
