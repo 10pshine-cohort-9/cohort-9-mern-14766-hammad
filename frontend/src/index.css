@@ -22,3 +22,70 @@
 .btn-secondary {
   @apply bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-medium py-2.5 px-4 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2;
 }
+
+/* Custom Quill Rich Text Editor styling */
+.rich-editor-wrapper {
+  @apply border border-slate-200 rounded-lg overflow-hidden transition-all duration-150 bg-white flex flex-col;
+}
+
+.rich-editor-wrapper:focus-within {
+  @apply border-slate-800 ring-2 ring-slate-900/10;
+}
+
+.rich-editor-wrapper .ql-toolbar.ql-snow {
+  @apply border-none border-b border-slate-200 bg-slate-50/80 px-3 py-2 flex flex-wrap gap-1 items-center;
+}
+
+.rich-editor-wrapper .ql-container.ql-snow {
+  @apply border-none text-slate-900 text-sm font-sans flex-1 overflow-y-auto min-h-[180px] max-h-[300px];
+}
+
+.rich-editor-wrapper .ql-editor {
+  @apply p-3.5 min-h-[180px] text-slate-900 leading-relaxed;
+}
+
+.rich-editor-wrapper .ql-editor.ql-blank::before {
+  @apply text-slate-400 not-italic left-3.5 top-3.5 font-normal text-sm;
+}
+
+/* Custom rich text content typography preview */
+.rich-text-preview {
+  @apply text-slate-700 leading-relaxed text-sm;
+}
+
+.rich-text-preview p {
+  @apply mb-1.5 last:mb-0;
+}
+
+.rich-text-preview h1 {
+  @apply text-lg font-bold text-slate-900 mb-1 mt-2 first:mt-0;
+}
+
+.rich-text-preview h2 {
+  @apply text-base font-semibold text-slate-900 mb-1 mt-2 first:mt-0;
+}
+
+.rich-text-preview h3 {
+  @apply text-sm font-semibold text-slate-900 mb-1 mt-1.5 first:mt-0;
+}
+
+.rich-text-preview ul {
+  @apply list-disc list-inside space-y-0.5 my-1.5 text-slate-700;
+}
+
+.rich-text-preview ol {
+  @apply list-decimal list-inside space-y-0.5 my-1.5 text-slate-700;
+}
+
+.rich-text-preview blockquote {
+  @apply border-l-2 border-slate-300 pl-3 italic text-slate-600 my-1.5;
+}
+
+.rich-text-preview code {
+  @apply bg-slate-100 px-1 py-0.5 rounded text-xs font-mono text-slate-800;
+}
+
+.rich-text-preview a {
+  @apply text-slate-900 underline font-medium hover:text-slate-700;
+}
+
