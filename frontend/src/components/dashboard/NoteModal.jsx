@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
 import { Alert } from '../ui/Alert';
 import { RichTextEditor } from './RichTextEditor';
+import { isContentEmpty, getNoteId } from '../../utils/textUtils';
 
 export const NoteModal = ({ isOpen, onClose, onSave, initialData = null, isSaving = false }) => {
   const [title, setTitle] = useState(initialData?.title || '');
@@ -17,13 +18,6 @@ export const NoteModal = ({ isOpen, onClose, onSave, initialData = null, isSavin
   }, [initialData, isOpen]);
 
   if (!isOpen) return null;
-
-  // Utility to check if HTML content actually contains text
-  const isContentEmpty = (html) => {
-    if (!html) return true;
-    const stripped = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
-    return stripped.length === 0;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,7 +92,7 @@ export const NoteModal = ({ isOpen, onClose, onSave, initialData = null, isSavin
               Content <span className="text-rose-500">*</span>
             </label>
             <RichTextEditor
-              key={initialData?._id || initialData?.id || 'new-note'}
+              key={getNoteId(initialData) || 'new-note'}
               value={content}
               onChange={setContent}
               placeholder="Write your note content here..."

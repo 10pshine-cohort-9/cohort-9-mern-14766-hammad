@@ -1,18 +1,18 @@
 import React from 'react';
 import { Edit3, Trash2, Calendar } from 'lucide-react';
+import { isHtml } from '../../utils/textUtils';
+
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date);
+};
 
 export const NoteCard = ({ note, onEdit, onDelete }) => {
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(date);
-  };
-
-  const isHtml = (str) => /<[a-z][\s\S]*>/i.test(str);
 
   return (
     <div

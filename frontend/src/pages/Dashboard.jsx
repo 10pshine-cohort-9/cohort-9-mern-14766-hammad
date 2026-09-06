@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Navbar } from '../components/dashboard/Navbar';
 import { NotesGrid } from '../components/dashboard/NotesGrid';
@@ -8,6 +8,7 @@ import { NoteModal } from '../components/dashboard/NoteModal';
 import { DeleteConfirmModal } from '../components/dashboard/DeleteConfirmModal';
 import { Alert } from '../components/ui/Alert';
 import { getNotesApi, createNoteApi, updateNoteApi, deleteNoteApi } from '../api/notes.api';
+import { getNoteId } from '../utils/textUtils';
 import { Plus, RefreshCw, FileText } from 'lucide-react';
 
 export const Dashboard = () => {
@@ -29,13 +30,25 @@ export const Dashboard = () => {
 
   // Success / Status banner
   const [toastMessage, setToastMessage] = useState(null);
+  const toastTimerRef = useRef(null);
 
-  const showToast = (message, type = 'success') => {
+  const showToast = useCallback((message, type = 'success') => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
     setToastMessage({ message, type });
-    setTimeout(() => {
+    toastTimerRef.current = setTimeout(() => {
       setToastMessage(null);
     }, 4000);
-  };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
 
   const fetchNotes = async () => {
     setIsLoading(true);
@@ -74,12 +87,12 @@ export const Dashboard = () => {
     setIsSaving(true);
     try {
       if (editingNote) {
-        const id = editingNote._id || editingNote.id;
+        const id = getNoteId(editingNote);
         const res = await updateNoteApi(id, noteData);
         const updated = res?.data?.note;
         if (updated) {
           setNotes((prev) =>
-            prev.map((n) => ((n._id || n.id) === id ? updated : n))
+            prev.map((n) => (getNoteId(n) === id ? updated : n))
           );
         } else {
           await fetchNotes();
@@ -97,8 +110,6 @@ export const Dashboard = () => {
       }
       setIsModalOpen(false);
       setEditingNote(null);
-    } catch (err) {
-      throw err;
     } finally {
       setIsSaving(false);
     }
@@ -108,10 +119,10 @@ export const Dashboard = () => {
   const handleConfirmDelete = async () => {
     if (!deletingNote) return;
     setIsDeleting(true);
-    const id = deletingNote._id || deletingNote.id;
+    const id = getNoteId(deletingNote);
     try {
       await deleteNoteApi(id);
-      setNotes((prev) => prev.filter((n) => (n._id || n.id) !== id));
+      setNotes((prev) => prev.filter((n) => getNoteId(n) !== id));
       showToast('Note deleted successfully', 'info');
       setDeletingNote(null);
     } catch (err) {
