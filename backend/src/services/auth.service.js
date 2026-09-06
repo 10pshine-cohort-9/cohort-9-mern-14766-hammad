@@ -2,6 +2,11 @@ const User = require("../models/user.model");
 const ApiError = require("../utils/ApiError");
 const { signToken } = require("../utils/jwt");
 
+const formatAuthPayload = (user) => ({
+  user: user.toJSON(),
+  token: signToken(user),
+});
+
 const register = async ({ name, email, password }) => {
   // The unique index is what actually prevents duplicates; this check just
   // turns the common case into a clean 409 instead of a driver error.
@@ -11,7 +16,7 @@ const register = async ({ name, email, password }) => {
 
   const user = await User.create({ name, email, password });
 
-  return { user: user.toJSON(), token: signToken(user) };
+  return formatAuthPayload(user);
 };
 
 const login = async ({ email, password }) => {
@@ -23,7 +28,7 @@ const login = async ({ email, password }) => {
     throw new ApiError(401, "Invalid email or password");
   }
 
-  return { user: user.toJSON(), token: signToken(user) };
+  return formatAuthPayload(user);
 };
 
 module.exports = { register, login };

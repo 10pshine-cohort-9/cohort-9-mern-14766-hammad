@@ -1,0 +1,135 @@
+PS H:\cohort-9-mern-14766-hammad\backend> npm run test:coverage
+
+> backend@1.0.0 test:coverage
+> nyc --reporter=text --reporter=html mocha --require tests/setup.js "tests/**/*.test.js" --recursive --exit
+
+◇ injected env (4) from .env // tip: ⌘ enable debugging { debug: true }
+
+
+  API Integration Route Tests
+    Authentication Endpoints
+      POST /api/v1/auth/register
+        ✔ should register a user when payload is valid (86ms)
+        ✔ should return 422 error when registration validation fails
+      POST /api/v1/auth/login
+        ✔ should log in user with valid credentials
+        ✔ should return 422 when login body is missing required fields
+      GET /api/v1/auth/me
+        ✔ should return profile details for authenticated request
+    Unauthorized Access Checks
+      ✔ should return 401 when accessing protected GET /api/v1/notes without token
+      ✔ should return 401 when accessing protected POST /api/v1/notes without token
+      ✔ should return 401 when accessing protected PATCH /api/v1/notes/:id without token
+      ✔ should return 401 when accessing protected DELETE /api/v1/notes/:id without token
+    Note Endpoints (Authenticated)
+      POST /api/v1/notes
+        ✔ should create a note and return 201 Created
+        ✔ should return 422 when note title is missing
+      GET /api/v1/notes
+        ✔ should fetch all user notes
+      GET /api/v1/notes/:id
+        ✔ should return single note for valid id
+        ✔ should return 422 when id is not a valid Mongo ObjectId
+      PATCH /api/v1/notes/:id
+        ✔ should update a note title and content
+      DELETE /api/v1/notes/:id
+        ✔ should delete a note and return 200 OK
+    404 Route Not Found
+      ✔ should return 404 for unknown endpoints
+
+  Auth Controller Unit Tests
+    register()
+      ✔ should call authService.register and send 201 response
+    login()
+      ✔ should call authService.login and send 200 response with data
+    getMe()
+      ✔ should return profile details of req.user
+
+  Note Controller Unit Tests
+    createNote()
+      ✔ should call noteService.createNote and return 201 response
+    getNotes()
+      ✔ should call noteService.getNotes and return 200 response with list        
+    getNote()
+      ✔ should call noteService.getNote and return note data
+    updateNote()
+      ✔ should call noteService.updateNote and return updated note data
+    deleteNote()
+      ✔ should call noteService.deleteNote and return success message
+
+  Auth Middleware Unit Tests
+    authenticate()
+      ✔ should pass 401 ApiError to next() if Authorization header is missing     
+      ✔ should pass 401 ApiError to next() if scheme is not Bearer
+      ✔ should pass 401 ApiError to next() if token is expired
+      ✔ should pass 401 ApiError to next() if token is invalid
+      ✔ should pass 401 ApiError to next() if user in token payload no longer exists
+      ✔ should set req.user and call next() with no error on valid authentication 
+    authorize()
+      ✔ should call next() if user role is permitted
+      ✔ should pass 403 ApiError to next() if user role is not permitted
+
+  Auth Service Unit Tests
+    register()
+      ✔ should register a new user and return user data with token
+      ✔ should throw 409 ApiError when email is already registered
+    login()
+      ✔ should log in user with valid credentials and return user with token      
+      ✔ should throw 401 ApiError when email does not exist
+      ✔ should throw 401 ApiError when password does not match
+
+  Note Service Unit Tests
+    createNote()
+      ✔ should create a note and return formatted note data
+    getNotes()
+      ✔ should fetch all notes owned by user and return count
+    getNote()
+      ✔ should return a single note if owned by the user
+      ✔ should throw 404 ApiError if note is not found or owned by another user   
+    updateNote()
+      ✔ should update note title and content successfully
+      ✔ should throw 422 ApiError if neither title nor content is provided        
+      ✔ should throw 404 ApiError if note to update does not exist
+    deleteNote()
+      ✔ should delete note if owned by user
+      ✔ should throw 404 ApiError if note to delete does not exist
+
+
+  47 passing (316ms)
+
+---------------------|---------|----------|---------|---------|-------------------
+File                 | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+---------------------|---------|----------|---------|---------|-------------------
+All files            |   86.99 |    62.04 |   83.92 |    88.4 |                   
+ src                 |     100 |      100 |     100 |     100 |                   
+  app.js             |     100 |      100 |     100 |     100 |                   
+ src/config          |   79.16 |    45.83 |      50 |   86.36 |                   
+  env.js             |   77.77 |    44.44 |     100 |     100 | 5-22              
+  logger.js          |      80 |       50 |      50 |      80 | 26-33,48          
+ src/controllers     |     100 |      100 |     100 |     100 |                   
+  auth.controller.js |     100 |      100 |     100 |     100 |                   
+  note.controller.js |     100 |      100 |     100 |     100 |                   
+ src/middleware      |   79.85 |    63.73 |   91.66 |    81.3 |                   
+  ...t.middleware.js |     100 |      100 |     100 |     100 |                   
+  auth.middleware.js |     100 |      100 |     100 |     100 |                   
+  ...r.middleware.js |   54.54 |    31.81 |      80 |   54.16 | 16-61,85-86,90    
+  ...r.middleware.js |    87.5 |       75 |    87.5 |   95.23 | 41                
+  validate.js        |     100 |      100 |     100 |     100 |                   
+ src/models          |   54.16 |        0 |       0 |   56.52 |                   
+  note.model.js      |    62.5 |      100 |       0 |    62.5 | 34-36             
+  user.model.js      |      50 |        0 |       0 |   53.33 | 42-43,47,53-56    
+ src/routes          |   97.05 |      100 |       0 |   97.05 |                   
+  auth.routes.js     |     100 |      100 |     100 |     100 |                   
+  index.js           |   88.88 |      100 |       0 |   88.88 | 9                 
+  note.routes.js     |     100 |      100 |     100 |     100 |                   
+ src/services        |     100 |     87.5 |     100 |     100 |                   
+  auth.service.js    |     100 |      100 |     100 |     100 |                   
+  note.service.js    |     100 |       80 |     100 |     100 | 35-36             
+ src/utils           |     100 |       50 |     100 |     100 |                   
+  ApiError.js        |     100 |       50 |     100 |     100 | 2                 
+  asyncHandler.js    |     100 |      100 |     100 |     100 |                   
+  jwt.js             |     100 |      100 |     100 |     100 |                   
+ src/validators      |     100 |      100 |     100 |     100 |                   
+  auth.validator.js  |     100 |      100 |     100 |     100 |                   
+  note.validator.js  |     100 |      100 |     100 |     100 |                   
+---------------------|---------|----------|---------|---------|-------------------

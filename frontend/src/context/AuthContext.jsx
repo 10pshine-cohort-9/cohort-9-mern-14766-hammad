@@ -11,6 +11,20 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(true);
 
+  const clearSession = useCallback(() => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setToken(null);
+  }, []);
+
+  const saveSession = useCallback((userData, jwtToken) => {
+    localStorage.setItem('token', jwtToken);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setToken(jwtToken);
+    setUser(userData);
+  }, []);
+
   // Initialize & verify existing session
   useEffect(() => {
     const initAuth = async () => {
@@ -26,78 +40,57 @@ export const AuthProvider = ({ children }) => {
           setUser(response.data.user);
           localStorage.setItem('user', JSON.stringify(response.data.user));
         } else {
-          logout();
+          clearSession();
         }
       } catch (err) {
-        // Token invalid or expired
-        logout();
+        clearSession();
       } finally {
         setLoading(false);
       }
     };
 
     initAuth();
-  }, []);
+  }, [clearSession]);
 
   // Listen for global 401 unauthorized events from Axios interceptor
   useEffect(() => {
-    const handleUnauthorized = () => {
-      setUser(null);
-      setToken(null);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    };
+    window.addEventListener('auth:unauthorized', clearSession);
+    return () => window.removeEventListener('auth:unauthorized', clearSession);
+  }, [clearSession]);
 
-    window.addEventListener('auth:unauthorized', handleUnauthorized);
-    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
-  }, []);
+  const login = useCallback(
+    async (credentials) => {
+      try {
+        const response = await loginApi(credentials);
+        const { user: userData, token: jwtToken } = response.data;
+        saveSession(userData, jwtToken);
+        return { success: true, message: response.message, user: userData };
+      } catch (err) {
+        return {
+          success: false,
+          message: err.message || 'Login failed. Please check your credentials.',
+        };
+      }
+    },
+    [saveSession]
+  );
 
-  const login = useCallback(async (credentials) => {
-    try {
-      const response = await loginApi(credentials);
-      const { user: userData, token: jwtToken } = response.data;
-
-      localStorage.setItem('token', jwtToken);
-      localStorage.setItem('user', JSON.stringify(userData));
-
-      setToken(jwtToken);
-      setUser(userData);
-
-      return { success: true, message: response.message, user: userData };
-    } catch (err) {
-      return {
-        success: false,
-        message: err.message || 'Login failed. Please check your credentials.',
-      };
-    }
-  }, []);
-
-  const register = useCallback(async (userData) => {
-    try {
-      const response = await registerApi(userData);
-      const { user: newUser, token: jwtToken } = response.data;
-
-      localStorage.setItem('token', jwtToken);
-      localStorage.setItem('user', JSON.stringify(newUser));
-
-      setToken(jwtToken);
-      setUser(newUser);
-
-      return { success: true, message: response.message, user: newUser };
-    } catch (err) {
-      return {
-        success: false,
-        message: err.message || 'Registration failed. Please try again.',
-      };
-    }
-  }, []);
-
-  const logout = useCallback(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-    setToken(null);
-  }, []);
+  const register = useCallback(
+    async (userData) => {
+      try {
+        const response = await registerApi(userData);
+        const { user: newUser, token: jwtToken } = response.data;
+        saveSession(newUser, jwtToken);
+        return { success: true, message: response.message, user: newUser };
+      } catch (err) {
+        return {
+          success: false,
+          message: err.message || 'Registration failed. Please try again.',
+        };
+      }
+    },
+    [saveSession]
+  );
 
   const value = {
     user,
@@ -106,8 +99,9 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user && !!token,
     login,
     register,
-    logout,
+    logout: clearSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
