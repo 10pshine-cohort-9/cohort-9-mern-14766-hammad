@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, Plus, ShieldCheck } from 'lucide-react';
+import { LogOut, Plus } from 'lucide-react';
 import { SearchBar } from './SearchBar';
 
 export const Navbar = ({
